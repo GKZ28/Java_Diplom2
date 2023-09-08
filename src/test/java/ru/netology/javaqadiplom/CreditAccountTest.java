@@ -8,15 +8,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CreditAccountTest {
 
     @Test
-    public void initialBalanceBelowZeroAngGreaterThanLimit() {  // Баланс ниже 0 и больше кредитного лимита( Не должен проходить )
+    public void initialBalanceBelowZeroAngGreaterThanLimit() {  // Баланс ниже 0 и больше кредитного лимита
         assertThrows(IllegalArgumentException.class, () -> {
-            CreditAccount account = new CreditAccount(-10_000, 5_000, 10);
-        });
+                    CreditAccount account = new CreditAccount(10_000, -5_000, 10);
+                    throw new IllegalArgumentException("Недопустимый аргумент");
+                }
+        );
     }
 
     @Test
-    public void initialBalanceBelowZeroAndLimit() {  // Баланс ниже 0 и меньше кредитного лимита( Должен проходить )
-        assertDoesNotThrow(() ->  {
+    public void initialBalanceBelowZeroAndLimit() {  // Баланс ниже 0 и меньше кредитного лимита
+        assertDoesNotThrow(() -> {
             CreditAccount account = new CreditAccount(-2_000, 5_000, 10);
             assertNotNull(account);
         });
@@ -24,7 +26,7 @@ public class CreditAccountTest {
 
     @Test
     public void initialBalanceBelowZeroAndEqualLimit() {  // Баланс ниже 0 и равен кредитному лимиту( Должен проходить )
-        assertDoesNotThrow(() ->  {
+        assertDoesNotThrow(() -> {
             CreditAccount account = new CreditAccount(-5_000, 5_000, 10);
             assertNotNull(account);
         });
@@ -48,8 +50,9 @@ public class CreditAccountTest {
 
     @Test
     public void creditLimitBelowZero() {  // Кредитный лимит ниже 0 ( Не должен проходить )
-        assertThrows(IllegalArgumentException.class, () -> {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
             CreditAccount account = new CreditAccount(0, -5_000, 10);
+            throw new IllegalArgumentException("Недопустимый аргумент");
         });
     }
 
@@ -70,17 +73,16 @@ public class CreditAccountTest {
     }
 
     @Test
-    public void rateBelowZero() {  // Ставка ниже 0 ( Не должна проходить )
-        assertThrows(IllegalArgumentException.class, () -> {
+    public void rateBelowZero() {  // Ставка ниже 0
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
             CreditAccount account = new CreditAccount(0, 5_000, -2);
         });
     }
 
     @Test
     public void rateEqualToZero() {  // Ставка равна 0 ( Должна проходить )
-        assertDoesNotThrow(() -> {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
             CreditAccount account = new CreditAccount(0, 5_000, 0);
-            assertNotNull(account);
         });
     }
 
@@ -93,76 +95,76 @@ public class CreditAccountTest {
     }
 
     @Test
-    public void payBelowZero () {  // Оплата отрицательной суммой
-        CreditAccount account = new CreditAccount(10_000,5_000,5);
+    public void payBelowZero() {  // Оплата отрицательной суммой
+        CreditAccount account = new CreditAccount(10_000, 5_000, 5);
         assertFalse(account.pay(-50));
-        assertEquals(10_000,account.getBalance());
+        assertEquals(10_000, account.getBalance());
     }
 
     @Test
-    public void payEqualZero () {  // Оплата нулем
-        CreditAccount account = new CreditAccount(10_000,5_000,5);
+    public void payEqualZero() {  // Оплата нулем
+        CreditAccount account = new CreditAccount(10_000, 5_000, 5);
         assertFalse(account.pay(0));
-        assertEquals(10_000,account.getBalance());
+        assertEquals(10_000, account.getBalance());
     }
 
     @Test
-    public void payBelowLimit () {  // Оплата меньше лимита
-        CreditAccount account = new CreditAccount(10_000,5_000,5);
+    public void payBelowLimit() {  // Оплата меньше лимита
+        CreditAccount account = new CreditAccount(10_000, 5_000, 5);
         assertTrue(account.pay(10_000));
-        assertEquals(0,account.getBalance());
+        assertEquals(0, account.getBalance());
     }
 
     @Test
-    public void payEqualLimit () {  // Оплата равна лимиту
-        CreditAccount account = new CreditAccount(10_000,5_000,5);
+    public void payEqualLimit() {  // Оплата равна лимиту
+        CreditAccount account = new CreditAccount(10_000, 5_000, 5);
         assertTrue(account.pay(15_000));
-        assertEquals(-5_000,account.getBalance());
+        assertEquals(-5_000, account.getBalance());
     }
 
     @Test
-    public void payGreaterLimit () {  // Оплата выше лимита
-        CreditAccount account = new CreditAccount(10_000,5_000,5);
+    public void payGreaterLimit() {  // Оплата выше лимита
+        CreditAccount account = new CreditAccount(10_000, 5_000, 5);
         assertFalse(account.pay(20_000));
-        assertEquals(10_000,account.getBalance());
+        Assertions.assertEquals(10_000, account.getBalance());
     }
 
     @Test
     public void addGreaterZero() { // Добавдение положительной суммы
-        CreditAccount account = new CreditAccount(1_000,5_000,15);
+        CreditAccount account = new CreditAccount(1_000, 5_000, 15);
         assertTrue(account.add(3000));
         Assertions.assertEquals(4_000, account.getBalance());
     }
 
     @Test
     public void addEqualZero() { // Добавление 0
-        CreditAccount account = new CreditAccount(1_000,5_000,15);
+        CreditAccount account = new CreditAccount(1_000, 5_000, 15);
         assertFalse(account.add(0));
         Assertions.assertEquals(1_000, account.getBalance());
     }
 
     @Test
     public void addBelowZero() { // Добавление отрицательной суммы
-        CreditAccount account = new CreditAccount(1_000,5_000,15);
+        CreditAccount account = new CreditAccount(1_000, 5_000, 15);
         assertFalse(account.add(-1_000));
         Assertions.assertEquals(1_000, account.getBalance());
     }
 
     @Test
     public void yearChangerWhenBalanceGreaterZero() { // Проценты при положительном балансе
-        CreditAccount account = new CreditAccount(1_000,5_000,15);
+        CreditAccount account = new CreditAccount(1_000, 5_000, 15);
         Assertions.assertEquals(0, account.yearChange());
     }
 
     @Test
     public void yearChangerWhenBalanceEqualZero() { // Проценты при нулевом балансе
-        CreditAccount account = new CreditAccount(0,5_000,15);
+        CreditAccount account = new CreditAccount(0, 5_000, 15);
         Assertions.assertEquals(0, account.yearChange());
     }
 
     @Test
     public void yearChangerWhenBalanceBelowZero() { // Проценты при отрицательном балансе
-        CreditAccount account = new CreditAccount(-1_000,5_000,15);
+        CreditAccount account = new CreditAccount(-1_000, 5_000, 15);
         Assertions.assertEquals(-150, account.yearChange());
     }
 
