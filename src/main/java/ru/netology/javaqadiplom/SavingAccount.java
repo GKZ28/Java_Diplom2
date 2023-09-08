@@ -69,8 +69,8 @@ public class SavingAccount extends Account {
         if (amount <= 0) {
             return false;
         }
-        if (balance + amount < maxBalance) {
-            balance = amount;
+        if (balance + amount <= maxBalance) {   // Скорректировал код, добавил "<=" вместо "<", чтобы можно было достигнуть максимального баланса
+            balance += amount;                 // Скорректировал код, добавил "+=" вместо "=", чтобы сумма прибавлялась к балансу
             return true;
         } else {
             return false;
